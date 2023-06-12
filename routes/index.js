@@ -36,7 +36,7 @@ router.use("/start-session", async (req, res) => {
     res.status(400).json({
       status: false,
       data: {
-        error: error?.message,
+        error: "error",
       },
     });
   }

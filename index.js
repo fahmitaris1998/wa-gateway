@@ -36,6 +36,7 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.send("Hey, Get out from here!");
 });
+
 var debug = require("debug")("wa:server");
 var http = require("http");
 const { loadSessionsFromStorage } = require("wa-multi-session");

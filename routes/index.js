@@ -36,7 +36,7 @@ router.use("/start-session", async (req, res) => {
     res.status(400).json({
       status: false,
       data: {
-        error: "error",
+        error: error?.message,
       },
     });
   }
@@ -70,6 +70,9 @@ router.use("/send-message", async (req, res) => {
     let to = req.body.to || req.query.to,
       text = req.body.text || req.query.text;
     let isGroup = req.body.isGroup || req.query.isGroup;
+    let media = req.query.media || req.body.media;
+    let send = "";
+
     console.log(
       "message send from >",
       req.headers["x-forwarded-for"] || req.socket.remoteAddress
@@ -94,12 +97,21 @@ router.use("/send-message", async (req, res) => {
           error: "Session Not Found",
         },
       });
-
-    const send = await whatsapp.sendTextMessage({
-      sessionId,
-      to: receiver,
-      text,
-    });
+    if(!media){
+      send = await whatsapp.sendTextMessage({
+        sessionId,
+        to: receiver,
+        text,
+      });
+    }else{
+      send = await whatsapp.sendImage({
+        sessionId,
+        to: receiver,
+        text,
+        media: media
+      });
+    }
+   
 
     res.status(200).json({
       status: true,
@@ -124,6 +136,7 @@ router.use("/send-bulk-message", async (req, res) => {
   try {
     const sessionId =
       req.body.session || req.query.session || req.headers.session;
+    const media = req.body.media || req.query.media;
     if (!sessionId) {
       return res.status(400).json({
         status: false,
@@ -132,14 +145,27 @@ router.use("/send-bulk-message", async (req, res) => {
         },
       });
     }
-    for (const dt of req.body.data) {
-      await createDelay(delay);
-      await whatsapp.sendTextMessage({
-        sessionId,
-        to: processNumber(dt.to),
-        text: dt.text,
-      });
+    if(!media){
+      for (const dt of req.body.data) {
+        await createDelay(req.body.delay || req.query.delay);
+        await whatsapp.sendTextMessage({
+          sessionId,
+          to: processNumber(dt),
+          text: req.query.text,
+        });
+      }
+    }else{
+      for (const dt of req.body.data) {
+        await createDelay(req.body.delay || req.query.delay);
+        await whatsapp.sendImage({
+          sessionId,
+          to: processNumber(dt),
+          text: req.query.text,
+          media: media
+        });
+      }
     }
+    
     console.log("SEND BULK MESSAGE WITH DELAY SUCCESS");
 
     res.status(200).json({

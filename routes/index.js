@@ -16,11 +16,21 @@ const requestIP = require('request-ip');
 router.use("/api/digiflazz", async(req,res) => {
   try{
     const ipAddress = requestIP.getClientIp(req);
+    const reqData = {
+      username: req.body.username,
+      commands: req.body.commands,
+      ref_id: req.body.ref_id,
+      hp: req.body.hp,
+      pulsa_code: req.body.pulsa_code,
+      sign: req.body.sign,
+      ipClient: ipAddress
+    };
+    console.log('datanya ni',reqData);
     const toptiershopUrl = 'https://toptiershop.id/api/v1/digiflazz';
     const options = {
       method: 'POST',
       url: toptiershopUrl,
-      data: req.body,
+      data: reqData,
     };
     console.log('IP CLIENT ', ipAddress);
     axios

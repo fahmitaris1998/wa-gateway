@@ -15,7 +15,7 @@ const requestIP = require('request-ip');
 
 router.use("/api/digiflazz", async(req,res) => {
   try{
-    const ipAddress = requestIP.getClientIp(req);
+    var ipAddress = requestIP.getClientIp(req);
     const reqData = {
       username: req.body.username,
       commands: req.body.commands,

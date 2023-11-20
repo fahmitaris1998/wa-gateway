@@ -26,7 +26,7 @@ router.use("/api/digiflazz", async(req,res) => {
       ipClient: ipAddress
     };
     if (ipAddress.substr(0, 7) == "::ffff:") {
-      ipAddress = ip.substr(7)
+      ipAddress = ipAddress.substr(7)
     }
     console.log('datanya ni',reqData);
     const toptiershopUrl = 'https://toptiershop.id/api/v1/digiflazz';

@@ -3,12 +3,45 @@ const { processNumber } = require("../utils/process-number");
 const createDelay = require("../utils/create-delay");
 const whatsapp = require("wa-multi-session");
 const { toDataURL } = require("qrcode");
+const req = require("express/lib/request");
 var router = express.Router();
+const axios = require('axios');
+const requestIP = require('request-ip');
 
 /**
   @param {import('express').Request} req
   @param {import('express').Response} res
  */
+
+router.use("/api/digiflazz", async(req,res) => {
+  try{
+    const ipAddress = requestIP.getClientIp(req);
+    const toptiershopUrl = 'https://toptiershop.id/api/v1/digiflazz';
+    const options = {
+      method: 'POST',
+      url: toptiershopUrl,
+      data: req.body,
+    };
+    console.log('IP CLIENT ', ipAddress);
+    axios
+      .request(options)
+      .then(function (resData) {
+        response = resData.data;
+        console.log(response);
+        res.status(200).json(response);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  }catch(error){
+    res.status(400).json({
+      status: false,
+      data: {
+        error: error?.message,
+      },
+    });
+  }
+})
 
 router.use("/start-session", async (req, res) => {
   try {
@@ -98,10 +131,16 @@ router.use("/send-message", async (req, res) => {
         },
       });
     if(!media){
+      var crypto = require("crypto");
+      var id = crypto.randomBytes(20).toString('hex');  
+      let r = (Math.random() + 1).toString(36).substring(15);
+     
+      let textfinal = id +" "+ text;
+      console.log("INI HASILNYA"+id);
       send = await whatsapp.sendTextMessage({
         sessionId,
         to: receiver,
-        text,
+        text: textfinal,
       });
     }else{
       send = await whatsapp.sendImage({
@@ -132,6 +171,13 @@ router.use("/send-message", async (req, res) => {
     });
   }
 });
+router.use("/operator",async (req, res)=>{
+  if(20%10==0){
+    console.log("betoll");
+  }else{
+    console.log("salahh");
+  }
+})
 router.use("/send-bulk-message", async (req, res) => {
   try {
     const sessionId =
@@ -146,17 +192,24 @@ router.use("/send-bulk-message", async (req, res) => {
       });
     }
     if(!media){
+      let buffer=0;
       for (const dt of req.body.data) {
-        await createDelay(req.body.delay || req.query.delay);
+        let r = (Math.random() + 1).toString(36).substring(7);
+        buffer += 1;
+        if(buffer%2==0){
+          await createDelay(60000);
+        }else{
+          await createDelay(Math.floor(Math.random() * 50)*1000);
+        }
         await whatsapp.sendTextMessage({
           sessionId,
           to: processNumber(dt),
-          text: req.query.text,
+          text: r+"\n\n"+req.query.text,
         });
       }
     }else{
       for (const dt of req.body.data) {
-        await createDelay(req.body.delay || req.query.delay);
+        await createDelay(Math.floor(Math.random() * 20)*1000);
         await whatsapp.sendImage({
           sessionId,
           to: processNumber(dt),

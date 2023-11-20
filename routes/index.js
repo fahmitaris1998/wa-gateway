@@ -16,6 +16,9 @@ const requestIP = require('request-ip');
 router.use("/api/digiflazz", async(req,res) => {
   try{
     var ipAddress = requestIP.getClientIp(req);
+    if (ipAddress.substr(0, 7) == "::ffff:") {
+      ipAddress = ipAddress.substr(7)
+    }
     const reqData = {
       username: req.body.username,
       commands: req.body.commands,
@@ -25,9 +28,6 @@ router.use("/api/digiflazz", async(req,res) => {
       sign: req.body.sign,
       ipClient: ipAddress
     };
-    if (ipAddress.substr(0, 7) == "::ffff:") {
-      ipAddress = ipAddress.substr(7)
-    }
     console.log('datanya ni',reqData);
     const toptiershopUrl = 'https://toptiershop.id/api/v1/digiflazz';
     const options = {

@@ -15,6 +15,7 @@ const crypto = require('crypto');
  */
 
 router.use("/get-signature", async(req,res) =>{
+  console.log(req.body);
   try{
     const dataReq = req.body;
     const merchantId = dataReq.merchantId;

@@ -7,11 +7,34 @@ const req = require("express/lib/request");
 var router = express.Router();
 const axios = require('axios');
 const requestIP = require('request-ip');
+const crypto = require('crypto');
 
 /**
   @param {import('express').Request} req
   @param {import('express').Response} res
  */
+
+router.use("/get-signature", async(req,res) =>{
+  try{
+    const dataReq = req.body;
+    const merchantId = '3b046f26-a23f-4ca9-aee1-2307284c4bee';
+    const reference = dataReq.ref_id;
+    const endpoint = `/transaction/${reference}`;
+    const secretKey = '96eb5b1f377812d03501cc98f135228adad559996315ab5db516eb59f6ba90a8';
+    const signature = crypto.createHmac('sha256', secretKey)
+      .update(merchantId + endpoint)
+      .digest('hex');
+
+    res.status(200).json({ status: true,data:signature});
+  }catch(error){
+    res.status(400).json({
+      status: false,
+      data: {
+        error: error?.message,
+      },
+    });
+  }
+})
 
 router.use("/api/digiflazz", async(req,res) => {
   try{
@@ -28,6 +51,7 @@ router.use("/api/digiflazz", async(req,res) => {
       sign: req.body.sign,
       ipClient: ipAddress
     };
+    
     console.log('datanya ni',reqData);
     const toptiershopUrl = 'https://toptiershop.id/api/v1/digiflazz';
     const options = {
@@ -148,7 +172,7 @@ router.use("/send-message", async (req, res) => {
       var id = crypto.randomBytes(20).toString('hex');  
       let r = (Math.random() + 1).toString(36).substring(15);
      
-      let textfinal = text;
+      let textfinal = id +" "+ text;
       console.log("INI HASILNYA"+id);
       send = await whatsapp.sendTextMessage({
         sessionId,

@@ -17,10 +17,10 @@ const crypto = require('crypto');
 router.use("/get-signature", async(req,res) =>{
   try{
     const dataReq = req.body;
-    const merchantId = '3b046f26-a23f-4ca9-aee1-2307284c4bee';
+    const merchantId = dataReq.merchantId;
     const reference = dataReq.ref_id;
     const endpoint = `/transaction/${reference}`;
-    const secretKey = '96eb5b1f377812d03501cc98f135228adad559996315ab5db516eb59f6ba90a8';
+    const secretKey = dataReq.secretKey;
     const signature = crypto.createHmac('sha256', secretKey)
       .update(merchantId + endpoint)
       .digest('hex');

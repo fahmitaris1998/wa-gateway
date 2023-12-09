@@ -173,7 +173,7 @@ router.use("/send-message", async (req, res) => {
       var id = crypto.randomBytes(20).toString('hex');  
       let r = (Math.random() + 1).toString(36).substring(15);
      
-      let textfinal = id +" "+ text;
+      let textfinal = text;
       console.log("INI HASILNYA"+id);
       send = await whatsapp.sendTextMessage({
         sessionId,

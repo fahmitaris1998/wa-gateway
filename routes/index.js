@@ -33,7 +33,7 @@ router.use("/get-signature", async(req,res) =>{
     }else if (dataReq.type== "productDetail"){
       console.log("msauk cek productDetail");
       productId = dataReq.productId;
-      endpoint = `/products`;
+      endpoint = `/products${productId}`;
     }
     const secretKey = dataReq.secretKey;
     const signature = crypto.createHmac('sha256', secretKey)

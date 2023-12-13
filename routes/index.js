@@ -122,6 +122,9 @@ router.use("/api/digiflazz", async(req,res) => {
     const options = {
       method: 'POST',
       url: toptiershopUrl,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       data: reqData,
     };
     console.log('IP CLIENT ', ipAddress);

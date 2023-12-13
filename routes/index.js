@@ -21,13 +21,27 @@ router.use("/digiflazz/callback", async(req,res)=>{
     if (ipAddress.substr(0, 7) == "::ffff:") {
       ipAddress = ipAddress.substr(7)
     }
-  
-    console.log('datanya ni',req.body);
+    const reqData = {
+      ref_id: req.body.ref_id,
+      status: req.body.status,
+      code: req.body.code,
+      hp: req.body.hp,
+      price: req.body.price,
+      message: req.body.message,
+      balance: req.body.balance,
+      tr_id: req.body.tr_id,
+      rc: req.body.rc,
+      sn: req.body.sn
+    };
+    const dataCallback = {
+      data : req.body
+    }
+    console.log('datanya ni',dataCallback);
     const digiFlazzCallback = 'https://api.digiflazz.com/v1/seller/callback';
     const options = {
       method: 'POST',
       url: digiFlazzCallback,
-      data: req.body,
+      data: dataCallback,
     };
     console.log('IP CLIENT ', ipAddress);
     axios

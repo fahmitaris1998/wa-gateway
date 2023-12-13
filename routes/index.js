@@ -14,6 +14,44 @@ const crypto = require('crypto');
   @param {import('express').Response} res
  */
 
+router.use("/digiflazz/callback", async(req,res)=>{
+  console.log(req.body);
+  try{
+    var ipAddress = requestIP.getClientIp(req);
+    if (ipAddress.substr(0, 7) == "::ffff:") {
+      ipAddress = ipAddress.substr(7)
+    }
+    const dataCallback = {
+      data : req.body
+    }
+    console.log('datanya ni',dataCallback);
+    const digiFlazzCallback = 'https://api.digiflazz.com/v1/seller/callback';
+    const options = {
+      method: 'POST',
+      url: digiFlazzCallback,
+      data: dataCallback,
+    };
+    console.log('IP CLIENT ', ipAddress);
+    axios
+      .request(options)
+      .then(function (resData) {
+        response = resData.data;
+        console.log(response);
+        res.status(200).json(response);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  }catch(e){
+    res.status(400).json({
+      status: false,
+      data: {
+        error: error?.message,
+      },
+    });
+  }
+  
+})
 router.use("/get-signature", async(req,res) =>{
   console.log(req.body);
   try{
@@ -33,11 +71,11 @@ router.use("/get-signature", async(req,res) =>{
     }else if (dataReq.type== "productDetail"){
       console.log("msauk cek productDetail");
       productId = dataReq.productId;
-      endpoint = `/products${productId}`;
+      endpoint = `/products`;
     }
     const secretKey = dataReq.secretKey;
     const signature = crypto.createHmac('sha256', secretKey)
-      .update(merchantId + endpoint)
+      .update(merchantId + endpoint + productId)
       .digest('hex');
 
     res.status(200).json({ status: true,data:signature});

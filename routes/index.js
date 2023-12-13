@@ -21,15 +21,13 @@ router.use("/digiflazz/callback", async(req,res)=>{
     if (ipAddress.substr(0, 7) == "::ffff:") {
       ipAddress = ipAddress.substr(7)
     }
-    const dataCallback = {
-      data : req.body
-    }
-    console.log('datanya ni',dataCallback);
+  
+    console.log('datanya ni',req.body);
     const digiFlazzCallback = 'https://api.digiflazz.com/v1/seller/callback';
     const options = {
       method: 'POST',
       url: digiFlazzCallback,
-      data: dataCallback,
+      data: req.body,
     };
     console.log('IP CLIENT ', ipAddress);
     axios

@@ -92,7 +92,7 @@ router.use("/get-signature", async(req,res) =>{
     console.log("IP REQUEST NYA "+ipAddress);
     const secretKey = dataReq.secretKey;
     const signature = crypto.createHmac('sha256', secretKey)
-      .update(merchantId + endpoint + productId)
+      .update(merchantId + endpoint)
       .digest('hex');
 
     res.status(200).json({ status: true,data:signature});

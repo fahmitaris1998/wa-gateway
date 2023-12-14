@@ -67,6 +67,10 @@ router.use("/digiflazz/callback", async(req,res)=>{
 router.use("/get-signature", async(req,res) =>{
   console.log(req.body);
   try{
+    var ipAddress = requestIP.getClientIp(req);
+    if (ipAddress.substr(0, 7) == "::ffff:") {
+      ipAddress = ipAddress.substr(7)
+    }
     const dataReq = req.body;
     const merchantId = dataReq.merchantId;
     var reference = "";
@@ -85,6 +89,7 @@ router.use("/get-signature", async(req,res) =>{
       productId = dataReq.productId;
       endpoint = `/products`;
     }
+    console.log("IP REQUEST NYA "+ipAddress);
     const secretKey = dataReq.secretKey;
     const signature = crypto.createHmac('sha256', secretKey)
       .update(merchantId + endpoint + productId)

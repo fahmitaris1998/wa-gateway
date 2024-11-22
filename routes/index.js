@@ -14,6 +14,42 @@ const crypto = require('crypto');
   @param {import('express').Response} res
  */
 
+router.use("/api/callbackdigiflazz", async(req,res) => {
+  try{
+    var ipAddress = requestIP.getClientIp(req);
+    if (ipAddress.substr(0, 7) == "::ffff:") {
+      ipAddress = ipAddress.substr(7)
+    }
+    console.log("ini requestnya bg",req.body);
+    const toptiershopUrl = 'https://toptiershop.id/api/v1/webhook/callbackdigiflazz';
+    const options = {
+      method: 'POST',
+      url: toptiershopUrl,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: req.body,
+    };
+    axios
+      .request(options)
+      .then(function (resData) {
+        response = resData.data;
+        console.log(response);
+        res.status(200).json(response);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  }catch(error){
+    res.status(400).json({
+      status: false,
+      data: {
+        error: error?.message,
+      },
+    });
+  }
+})
+
 router.use("/digiflazz/callback", async(req,res)=>{
   console.log(req.body);
   try{
